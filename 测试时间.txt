@@ -1,0 +1,44 @@
+1 PCL自带的
+
+#include <pcl/console/parse.h>
+#include <pcl/console/time.h>
+
+pcl::console::TicToc time;
+time.tic ();
+
+save_pcd(ss_read,shot_352);
+
+PCL_INFO("  save SHOT.pcd took：%f seconds \n\n",time.toc()/1000);
+
+
+
+2 利用c++  C/C++统计算法运行时间代码 
+
+
+平常测试个PCL算法的效率，常用代码分享了。
+#include < ctime >
+
+time_t tstart, tend;
+
+tstart = time(0);
+//your scripts
+//
+//end
+tend = time(0);
+cout << “It took ” << difftime(tend, tstart) << ” second(s).” << endl;
+
+It worked fine for me.
+
+Well, if you want to be as precise as possible, then use the following C code, which is at microsecond resolution:
+
+#include <time.h>
+
+double tstart, tstop, ttime;
+
+tstart = (double)clock()/CLOCKS_PER_SEC;
+
+/* YOUR CODES */
+
+tstop = (double)clock()/CLOCKS_PER_SEC;
+
+ttime= tstop-tstart; /*ttime is how long your code run */

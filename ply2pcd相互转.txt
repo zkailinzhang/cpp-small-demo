@@ -1,0 +1,38 @@
+// Load the first ply file
+
+pcl::PCLPointCloud2 cloud;
+
+pcl::PLYReader reader;
+if (reader.read ("model1.ply", cloud) < 0)
+	
+return (false);
+
+// Convert to pcd and save
+
+pcl::PCDWriter writer;
+
+writer.write ("model1.pcd", cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), "ascii");
+
+
+	pcl::PCLPointCloud2 cloud;
+        方法1
+	pcl::PLYReader reader;
+	if (reader.read("mario/mario002.ply", cloud) < 0)		return (false);
+	// Convert to pcd and save
+	pcl::PCDWriter writer;
+	writer.write("mario/mario000.pcd", cloud);
+	方法2
+
+	pcl::io::loadPLYFile("mario/mario002.ply", cloud);
+	pcl::io::savePCDFile("mario/mario000.pcd", cloud);
+
+
+
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::io::loadPCDFile("sphere.pcd", *cloud);
+
+	pcl::PolygonMesh mesh;
+	pcl::toPCLPointCloud2(*cloud, mesh.cloud);
+
+	pcl::io::savePLYFile("spere.ply", mesh);

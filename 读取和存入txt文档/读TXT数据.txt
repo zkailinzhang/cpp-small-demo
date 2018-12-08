@@ -1,0 +1,24 @@
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+using namespace std;
+void main()
+{
+	int n=20;
+	int data[20];    //定义用来存储被读取文件的数组data[]；n=20,存20个数据！
+	ifstream infile("data.txt",ios::in); //读.txt数据文件专用代码。写txt文档名字的时候，注意后缀名的有无问题会造成读写失败；
+	if(!infile)                          //判断有无存在数据文件。数据文件txt里数据的排列中间只要用空格隔开，或者用回车；
+	{
+		cout<<"不能打开该文件或不存在该文件!"<<endl;
+		exit(1);
+	}
+	for(int i=0;i<n;i++)
+	{
+		infile>>data[i];    //数据文件读入后存到事先声明的 data[20]数组中
+	}
+	cout<<"data[i] is:"<<endl;
+	for(i=0;i<n;i++)	
+		cout<<data[i]<<" ";
+	cout<<endl;
+
+}

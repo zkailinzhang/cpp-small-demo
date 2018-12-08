@@ -1,0 +1,20 @@
+ofstream outputfile("matrix_result.txt",ios_base::out); //指定输出存入matrix_result.txt 中
+	outputfile<<"                 等值节点导纳矩阵"<<endl
+		<<"=================================================================="<<endl;
+	outputfile.close();
+
+	outputfile.open("matrix_result.txt",ios::app);
+
+	for(n=0;n<28;n++)
+	{
+		for(m=0;m<28;m++)
+		{
+			cout<<setiosflags(ios_base::fixed);
+			outputfile<<setiosflags(ios_base::left)<<setw(2)<<Y[n][m]; //setw(2)设定数组元素之间 间隔2个空格
+
+		}
+		outputfile<<endl;  //输出每行完毕回车
+	}
+
+
+以上为输出流输出 一个二维数组的例子。需包含头文件:include<iostream>

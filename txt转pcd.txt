@@ -1,0 +1,85 @@
+由于pcl点云库中的大多数方法的操作都是针对于pcd文件进行的，对于xyz坐标的txt文件的操作需要转化成pcd，今晚整理了一下将点云xyz坐标的txt文件转化成pcd文件方法。首先，统计txt文件中点的个数，即通过使用fgetc函数来统计\n的个数，然后将返回值作为pcd文件中点的个数。
+
+使用以下代码实现：
+
+struct lin
+{
+    double a[6];
+};
+
+int main()
+{
+    int n=121994;
+    int c=0;
+    lin st_1[n];
+    int m = 0;
+
+/////////////////////////////////以下为计算txt文件中点的数量////////////////////////////////////////
+//    FILE *fp;
+//    fp = fopen("/Users/pangshuxin/dataset/to pang/to pang/scan02.txt","r");
+//    
+//    do{
+//        c = fgetc(fp);
+//        if(c == '\n'){
+//            ++m;
+//        }
+//    }
+//    while(c != EOF);
+//    
+//    fclose(fp);
+//    std::cout << m <<std::endl;
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout<<n<<std::endl;
+    FILE *fp_1;
+    fp_1 = fopen("/Users/pangshuxin/dataset/to pang/to pang/scan02.txt","r");
+    std::cout << n <<std::endl;
+
+    for(int i=0; i<n; ++i){
+        if(6==fscanf(fp_1,"%lf,%lf,%lf,%lf,%lf,%lf\n", &st_1[i].a[0],&st_1[i].a[1],&st_1[i].a[2],&st_1[i].a[3],&st_1[i].a[4],&st_1[i].a[5])){
+
+//            std::cout<<st_1[i].a[0]<<std::endl;
+        }
+    }
+    fclose(fp_1);
+    std::cout<<"ok"<<std::endl;
+
+pcl::PointCloud<pcl::PointXYZ> cloud;
+
+// Fill in the cloud data
+cloud.width    = n;
+cloud.height   = 1;
+cloud.is_dense = false;
+cloud.points.resize (cloud.width * cloud.height);
+
+for (size_t i = 0; i < cloud.points.size (); ++i)
+{
+    cloud.points[i].x = st_1[i].a[0];
+    cloud.points[i].y = st_1[i].a[1];
+    cloud.points[i].z = st_1[i].a[2];
+}
+ pcl::io::savePCDFileASCII ("/Users/pangshuxin/dataset/1/b.pcd", cloud);
+std::cerr << "Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+
+for (size_t i = 0; i < cloud.points.size (); ++i)
+std::cerr << "    " << cloud.points[i].x << " " << cloud.points[i].y << " " << cloud.points[i].z << std::endl;
+
+    return 0;
+}
+
+int numofPoints(char* fname){
+    int n=0;
+    int c=0;
+    FILE *fp;
+    fp = fopen(fname,"r");
+    do{
+        c = fgetc(fp);
+        if(c == '\n'){
+        ++n;
+        }
+    }
+    while(c != EOF);
+    fclose(fp);
+    return n;
+}

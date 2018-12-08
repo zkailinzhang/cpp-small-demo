@@ -1,0 +1,126 @@
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/io/vtk_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <vtkPolyDataReader.h>
+
+
+	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr clud(new pcl::PointCloud<pcl::PointXYZRGBA>());
+	//pcl::io::loadPCDFile("model1.pcd",*cloud);
+
+	//修改后缀名 路径不变
+	std::string file = "standford/mario_object_templates.txt";
+
+	std::ifstream input(file);
+	std::string ply_file, pcd_file;
+	while (input.good())   //判断文件是否结束
+	{
+		
+		std::getline(input, ply_file);
+		std::string::size_type pos = ply_file.rfind("ply");   // 双字符
+		if (ply_file.empty() || ply_file.at(0) =='#' )
+		 continue;
+
+		pcl::PolygonMesh mesh;
+		vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+
+		pcl::io::loadPolygonFilePLY(ply_file, mesh);
+		pcl::io::mesh2vtk(mesh, polydata);
+		pcl::io::vtkPolyDataToPointCloud(polydata, *clud);
+
+		pcd_file = ply_file;
+
+		if (pos != std::string::npos)           //npos就是到头了
+		      pcd_file.replace(pos, 3, "pcd");  // 双字符
+
+		pcl::io::savePCDFile(pcd_file, *clud);
+		
+
+	}
+	input.close();
+
+
+
+	//修改序列后缀名 路径不变
+	std::string file = "standford/mario_object_templates.txt";
+
+	std::ifstream input(file);
+	std::string ply_file, pcd_file;
+	while (input.good())   //判断文件是否结束
+	{
+		
+		std::getline(input, ply_file);
+		std::string::size_type pos = ply_file.rfind("ply");   // 双字符
+		if (ply_file.empty() || ply_file.at(0) =='#' )
+		 continue;
+		pcl::PCLPointCloud2 cluo;
+		cout << ply_file;
+		pcl::io::loadPLYFile(ply_file, cluo);
+		pcd_file = ply_file;
+
+		if (pos != std::string::npos)           //npos就是到头了
+		      pcd_file.replace(pos, 3, "pcd");  // 双字符
+		cout << pcd_file;
+		pcl::io::savePCDFile(pcd_file, cluo);
+		
+
+	}
+	input.close();	
+
+
+
+
+
+
+/*
+		//pcd文件显示
+		pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
+		//pcl::io::loadPCDFile("model1.pcd",*cloud);
+
+		//ply文件显示
+		pcl::PolygonMesh mesh;
+		vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+
+		pcl::io::loadPolygonFilePLY("mario/Scene1.ply", mesh);
+		// ply另存vtk
+		//pcl::io::saveVTKFile("temp.vtk", mesh);
+		pcl::io::mesh2vtk(mesh, polydata);			
+
+		pcl::io::vtkPolyDataToPointCloud(polydata, *cloud);
+
+		//两种存贮方式 pcd另存pcd
+		pcl::PCDWriter pcdwriter;
+		//pcdwriter.write<pcl::PointXYZRGBA>("save_ply2vtk2pcd.pcd", *cloud);
+		pcl::io::savePCDFileASCII("mario/Scene11.pcd", *cloud);
+
+*/
+	/*
+		pcl::PCLPointCloud2 clod;
+		pcl::io::loadPLYFile("mario/Scene1.ply", clod);
+		pcl::io::savePCDFile("mario/Scene111.pcd", clod);
+	*/
+	/*
+	    pcl::PCLPointCloud2 clod;
+		pcl::PLYReader reader;
+		reader.read("mario/Scene1.ply", clod);
+		pcl::PCDWriter writer;
+		writer.writeASCII("mario/Scene1111.pcd", clod);   writeBinary
+
+	*/
+
+		pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
+		pcl::io::loadPCDFile("mario/Scene1111.pcd", *cloud);
+
+
+		boost::shared_ptr<pcl::visualization::PCLVisualizer> viewe(new pcl::visualization::PCLVisualizer("ss"));
+		viewe->initCameraParameters();
+		viewe->setBackgroundColor(0.3,0.3,0.3);
+		viewe->addCoordinateSystem(1.0f);
+		pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color(cloud);
+		viewe->addPointCloud<pcl::PointXYZRGBA>(cloud, color, "cloud");
+		viewe->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_FONT_SIZE, 3, "cloud");
+		while (!viewe->wasStopped())		{
+			viewe->spinOnce(100);
+			boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+
+		}

@@ -1,0 +1,67 @@
+las文件读取，转换成pcd
+http://www.pclcn.org/bbs/forum.php?mod=viewthread&tid=347
+
+写了一个las文件读取，转换pcd的小程序。程序只包含了必要的lib和dll文件。读者可自己配置。
+
+程序下载地址：
+http://pan.baidu.com/share/link? ... 1&uk=3926693025
+
+主要代码如下：
+// las_pcl.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <ios>
+#include <iostream>
+#include <laslib/lasreader.hpp>
+
+/*
+将'/'格式的文件路径转换成 '\\';
+*/
+static std::string convertFilePath(const std::string& file)
+{
+        int i = 0;
+        std::string s(file);
+        for(i = 0; i < s.size(); ++i)
+        {
+                if(s[i] == '/')
+                        s[i] = '\\';
+        }
+        return s;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+        const char* your_las_file_path = "XX.las";
+        const char* your_pcd_out_file_path = "XX.pcd";
+        //laslib只允许'\\'格式的文件路径。
+        std::string lasFile = convertFilePath(your_las_file_path);
+
+
+        //打开las文件
+        LASreadOpener lasreadopener;
+        lasreadopener.set_file_name(lasFile.c_str());
+        LASreader* lasreader = lasreadopener.open();
+        size_t count = lasreader->header.number_of_point_records;
+        pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
+        pointCloudPtr->resize(count);
+        pointCloudPtr->width = 1;
+        pointCloudPtr->height = count;
+        pointCloudPtr->is_dense = false;
+        size_t i = 0;
+        while(lasreader->read_point() && i < count)
+        {
+                pointCloudPtr->points[i].x = lasreader->point.get_x();
+                pointCloudPtr->points[i].y = lasreader->point.get_y();
+                pointCloudPtr->points[i].z = lasreader->point.get_z();
+                ++i;
+        }
+        pcl::io::savePCDFileASCII(your_pcd_out_file_path,*pointCloudPtr);
+        return 0;
+}
+复制代码
